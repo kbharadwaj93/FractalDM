@@ -1,0 +1,51 @@
+% MATLAB Script to Load data and run HFD/BC for given dynamometer data file    %
+% by                                                                    %
+% Kamalesh Bharadwaj (Research Intern, IIT Guwahati)                    %
+%                                                                       %
+
+% load data from dynamometer txt file
+datas = load('datas.txt');      
+
+%input prompt to decide signal and FDM type
+prompt = {'Enter data signal to analyse: (Type fz, fy or fz)','Enter FDM Type: (Type HFD or BCM)'};
+dlgtitle = 'Fractal Data Analysis Input';
+dims = [1 60];
+answer = inputdlg(prompt,dlgtitle,dims);
+
+% to select specific data according to format from dynamometer
+% Column 2 for fz signal; Column 3 for fy; Column 4 for fx
+
+if(answer(2) == "HFD")
+    if(answer(1) == "fx")
+        data = datas(:,4);
+    elseif (answer(1) == "fy")
+        data = datas(:,3);
+    elseif (answer(1) == "fz")
+        data = datas(:,2);    
+    else 
+        msg1 = 'Invalid Input!! Please Enter: "fx","fy","fz"';
+        error(msg1)
+    end
+
+    %find FD by calling Higuchi Fractal Dimension function
+    HFD_LCALC(data)
+    
+elseif (answer(2) == "BCM")
+    % time data(column 1) is required by Box counting code
+    if(answer(1) == "fx")
+        data = [datas(:,1), datas(:,4)];
+    elseif (answer(1) == "fy")
+        data = [datas(:,1), datas(:,3)];
+    elseif (answer(1) == "fz")
+        data = [datas(:,1), datas(:,2)];    
+    else 
+        msg1 = 'Invalid Input!! Please Enter: "fx","fy","fz"';
+        error(msg1)
+    end
+    %use box counting algorithm code.
+    
+    fractaldim(data, 0, 0)
+else
+    msg2 = 'Invalid Input!! Please Enter: "HFD" or "BCM"';
+    error(msg2)
+end
